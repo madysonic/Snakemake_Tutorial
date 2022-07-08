@@ -12,7 +12,10 @@
 
 
 # List of sample names - used as a variable in the workflow
-SAMPLES = [	"Lancer",	"Mace"]
+SAMPLES = [
+	"Lancer",
+	"Mace"
+]
 
 
 
@@ -69,7 +72,30 @@ rule fastqc:
 		"""
 		fastqc --threads {threads} {input}
 		"""
-rule trimmomatic:	input:		r1 = "raw_reads/{SAMPLE}_R1.fastq.gz",		r2 = "raw_reads/{SAMPLE}_R2.fastq.gz",		adapters = "misc/TruSeq3-PE.fa"	output:		r1 = "qc_reads/{SAMPLE}_R1.fastq.gz",		r2 = "qc_reads/{SAMPLE}_R2.fastq.gz",		r1_unpaired = "qc_reads/{SAMPLE}_R1.unpaired.fastq.gz",		r2_unpaired = "qc_reads/{SAMPLE}_R2.unpaired.fastq.gz",	conda:		"default.yaml",	shell:		"""		trimmomatic PE \		-threads {threads} \		{input.r1} {input.r2} \		{output.r1} {output.r1_unpaired} \		{output.r2} {output.r2_unpaired} \		ILLUMINACLIP:{input.adapters}:2:30:10:3:true \		LEADING:2 \		TRAILING:2 \		SLIDINGWINDOW:4:15 \		MINLEN:36		"""
+rule trimmomatic:
+	input:
+		r1 = "raw_reads/{SAMPLE}_R1.fastq.gz",
+		r2 = "raw_reads/{SAMPLE}_R2.fastq.gz",
+		adapters = "misc/TruSeq3-PE.fa"
+	output:
+		r1 = "qc_reads/{SAMPLE}_R1.fastq.gz",
+		r2 = "qc_reads/{SAMPLE}_R2.fastq.gz",
+		r1_unpaired = "qc_reads/{SAMPLE}_R1.unpaired.fastq.gz",
+		r2_unpaired = "qc_reads/{SAMPLE}_R2.unpaired.fastq.gz",
+	conda:
+		"default.yaml",
+	shell:
+		"""
+		trimmomatic PE \
+		-threads {threads} \
+		{input.r1} {input.r2} \
+		{output.r1} {output.r1_unpaired} \
+		{output.r2} {output.r2_unpaired} \
+		ILLUMINACLIP:{input.adapters}:2:30:10:3:true \
+		LEADING:2 \
+		TRAILING:2 \
+		SLIDINGWINDOW:4:15 \
+		MINLEN:36
 		"""
 
 rule bwa_mem:
